@@ -5,10 +5,12 @@ from datetime import date
 
 def test_orderline_mapper_can_load_lines(session):
     session.execute(
-        text("INSERT INTO order_lines (orderid, sku, qty) VALUES "
-        '("order1", "RED-CHAIR", 12),'
-        '("order1", "RED-TABLE", 13),'
-        '("order2", "BLUE-LIPSTICK", 14)')
+        text(
+            "INSERT INTO order_lines (orderid, sku, qty) VALUES "
+            '("order1", "RED-CHAIR", 12),'
+            '("order1", "RED-TABLE", 13),'
+            '("order2", "BLUE-LIPSTICK", 14)'
+        )
     )
     expected = [
         model.OrderLine("order1", "RED-CHAIR", 12),
@@ -29,12 +31,16 @@ def test_orderline_mapper_can_save_lines(session):
 
 def test_retrieving_batches(session):
     session.execute(
-        text("INSERT INTO batches (reference, sku, _purchased_quantity, eta)"
-        ' VALUES ("batch1", "sku1", 100, null)')
+        text(
+            "INSERT INTO batches (reference, sku, _purchased_quantity, eta)"
+            ' VALUES ("batch1", "sku1", 100, null)'
+        )
     )
     session.execute(
-        text("INSERT INTO batches (reference, sku, _purchased_quantity, eta)"
-        ' VALUES ("batch2", "sku2", 200, "2011-04-11")')
+        text(
+            "INSERT INTO batches (reference, sku, _purchased_quantity, eta)"
+            ' VALUES ("batch2", "sku2", 200, "2011-04-11")'
+        )
     )
     expected = [
         model.Batch("batch1", "sku1", 100, eta=None),
@@ -60,21 +66,27 @@ def test_saving_allocations(session):
     batch.allocate(line)
     session.add(batch)
     session.commit()
-    rows = list(session.execute(text('SELECT orderline_id, batch_id FROM "allocations"')))
+    rows = list(
+        session.execute(text('SELECT orderline_id, batch_id FROM "allocations"'))
+    )
     assert rows == [(batch.id, line.id)]
 
 
 def test_retrieving_allocations(session):
     session.execute(
-        text('INSERT INTO order_lines (orderid, sku, qty) VALUES ("order1", "sku1", 12)')
+        text(
+            'INSERT INTO order_lines (orderid, sku, qty) VALUES ("order1", "sku1", 12)'
+        )
     )
     [[olid]] = session.execute(
         text("SELECT id FROM order_lines WHERE orderid=:orderid AND sku=:sku"),
         dict(orderid="order1", sku="sku1"),
     )
     session.execute(
-        text("INSERT INTO batches (reference, sku, _purchased_quantity, eta)"
-        ' VALUES ("batch1", "sku1", 100, null)')
+        text(
+            "INSERT INTO batches (reference, sku, _purchased_quantity, eta)"
+            ' VALUES ("batch1", "sku1", 100, null)'
+        )
     )
     [[bid]] = session.execute(
         text("SELECT id FROM batches WHERE reference=:ref AND sku=:sku"),
