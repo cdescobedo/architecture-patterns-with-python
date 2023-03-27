@@ -18,7 +18,7 @@ class SqlRepository(AbstractRepository):
     def __init__(self, session: str):
         self.session = session
 
-    def add(self, batch: model.Batch):
+    def add(self, batch: model.Batch) -> None:
         batch_insert = self.session.execute(
             text(
                 "INSERT INTO batches (reference, sku, _purchased_quantity, eta)"
